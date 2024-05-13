@@ -64,7 +64,7 @@ describe("Grocer", function() {
         avocadoCoupon = findCoupon('AVOCADO')
         cart = [avocado, avocado]
         consolidatedCart = consolidateCart(cart)
-        avocadoResult = applyCoupons(consolidatedCart, [avocadoCoupon])
+        avocadoResult = applyCoupons(consolidatedCart, avocadoCoupon)
       })
 
       it("adds a new key, value pair to the cart hash called 'ITEM NAME W/COUPON'", function() {
