@@ -1,70 +1,77 @@
-const cart1 = 
+const items = 
   [
     {"AVOCADO": {price: 3.0, clearance: true}},
     {"AVOCADO": {price: 3.0, clearance: true}},
     {"KALE": {price: 3.0, clearance: false}}
   ]
 
-const consolidateCart = (cart) => {
-  const consolidatedCart = {}
-  cart.forEach((item) =>{
-    //console.log(item)
-    let currentKey = Object.keys(item)[0]
-    if(!consolidatedCart[currentKey]){
-      //console.log(Item not in consolidatedCart: ${item})
-      consolidatedCart[currentKey] = {
-        price: item[currentKey].price,
-        clearance: item[currentKey].clearance,
+const consolidateCart = (items) => {
+  const cart = {}
+  for(const item in items){
+    const itemKey = Object.keys(items[item])[0]
+    if(cart.hasOwnProperty(itemKey)){
+      cart[itemKey].count++
+    }else{
+      cart[itemKey] = {
+        price: items[item][itemKey].price,
+        clearance: items[item][itemKey].clearance,
         count: 1
       }
-    }else{
-      consolidatedCart[currentKey].count++;
     }
-  })
-  //console.log(consolidatedCart)
-  return consolidatedCart;
+  }
+  return cart
 }
+//console.log(consolidateCart(items));
 
 const cart2 = {
-  "AVOCADO": {price: 3.0, clearance: true, count: 3},
+  "AVOCADO": {price: 3.0, clearance: true, count: 2},
   "KALE": {price: 3.0, clearance: false, count: 1}
 }
 
 const coupons = {item: "AVOCADO", num: 2, cost: 5.0}
 
-const applyCoupons = (cart, coupons) => {
-  let ourCart = cart;
-  // console.log(coupons)
-  let currentCouponKey = coupons.item;
-  for(const item in ourCart) {
-    // let currentCartKey = Object.keys(ourCart)[0];
-    if(item === currentCouponKey) {
-      // console.log('if ran')
-      // console.log(coupons.num)
-      // console.log(ourCart[currentCartKey].count);
-      let uncouponableItems = ourCart[item].count - coupons.num;
-      console.log(uncouponableItems)
-      ourCart[item].count = uncouponableItems
-      let clearancePrice = coupons.cost
-      ourCart[`${item} W/COUPON`] = {price: clearancePrice, clearance: true, count:1}
+const applyCoupons = (cart, coupon) => {
+  const couponProduct = coupon.item
+  for(const item in cart){
+    if(item === couponProduct){
+      if(cart[item].count - coupon.num >= 0){
+        const eligibleSetsForCoupon = Math.floor(cart[item].count / coupon.num)
+        cart[`${item} W/COUPON`] = {
+          price: coupon.cost,
+          clearance: cart[item].clearance,
+          count: eligibleSetsForCoupon
+        }
+        const remainingCount =  cart[item].count - (eligibleSetsForCoupon * coupon.num)
+        cart[item].count = remainingCount
+      }
+      return cart
     }
   }
-  console.log(Object.keys(ourCart))
-  return ourCart;
 }
+//console.log(applyCoupons(cart2, coupons));
 
-console.log(applyCoupons(cart2, coupons));
-
-// {
-//   "AVOCADO": {price: 3.0, clearance: true, count: 1},
-//   "KALE": {price: 3.0, clearance: false, count: 1},
-//   "AVOCADO W/COUPON": {price: 5.0, clearance: true, count: 1}
-// }
+const cart3 = {
+  "PEANUTBUTTER": {price: 3.00, clearance: true, count: 2},
+  "KALE": {price: 3.00, clearance: false, count: 3},
+  "SOY MILK": {price: 4.50, clearance: true, count: 1}
+}
 
 const applyClearance = (cart) =>{
-  // code here
+  const discount = .20;
+  for(const item in cart){
+    if(cart[item].clearance === true){
+      const discountPrice = cart[item].price * (1 - discount)
+      cart[item].price = Math.round(discountPrice * 100) / 100
+    }
+  }
+  return cart
 }
-
+console.log(applyClearance(cart3))
+// {
+//   "PEANUTBUTTER": {price: 2.40, clearance: true, count: 2},
+//   "KALE": {price: 3.00, clearance: false, count: 3},
+//   "SOY MILK": {price: 3.60, clearance: true, count: 1}
+// }
 const checkout = (cart, coupons) => {
   // code here
 }
