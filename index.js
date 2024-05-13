@@ -4,6 +4,8 @@ const items =
     {"AVOCADO": {price: 3.0, clearance: true}},
     {"KALE": {price: 3.0, clearance: false}}
   ]
+  const items2 = [
+    {"KALE": {price: 3.0, clearance: false, count: 1}}]
 
 const consolidateCart = (items) => {
   const cart = {}
@@ -21,34 +23,39 @@ const consolidateCart = (items) => {
   }
   return cart
 }
-//console.log(consolidateCart(items));
+// console.log(consolidateCart(items2));
 
 const cart2 = {
   "AVOCADO": {price: 3.0, clearance: true, count: 2},
   "KALE": {price: 3.0, clearance: false, count: 1}
 }
 
-const coupons = {item: "AVOCADO", num: 2, cost: 5.0}
+const coupons = [{item: "AVOCADO", num: 2, cost: 5.0}]
 
 const applyCoupons = (cart, coupon) => {
-  const couponProduct = coupon.item
+  if(coupon.length > 0) {
+  const couponProduct = coupon[0].item
   for(const item in cart){
     if(item === couponProduct){
-      if(cart[item].count - coupon.num >= 0){
-        const eligibleSetsForCoupon = Math.floor(cart[item].count / coupon.num)
+      if(cart[item].count - coupon[0].num >= 0){
+        const eligibleSetsForCoupon = Math.floor(cart[item].count / coupon[0].num)
         cart[`${item} W/COUPON`] = {
-          price: coupon.cost,
+          price: coupon[0].cost,
           clearance: cart[item].clearance,
           count: eligibleSetsForCoupon
         }
-        const remainingCount =  cart[item].count - (eligibleSetsForCoupon * coupon.num)
+        const remainingCount =  cart[item].count - (eligibleSetsForCoupon * coupon[0].num)
         cart[item].count = remainingCount
       }
-      return cart
     }
+    return cart
   }
+  }
+  return cart
 }
-//console.log(applyCoupons(cart2, coupons));
+
+
+// console.log(applyCoupons(items2, coupons));
 
 const cart3 = {
   "PEANUTBUTTER": {price: 3.00, clearance: true, count: 2},
@@ -66,12 +73,23 @@ const applyClearance = (cart) =>{
   }
   return cart
 }
-console.log(applyClearance(cart3))
-// {
-//   "PEANUTBUTTER": {price: 2.40, clearance: true, count: 2},
-//   "KALE": {price: 3.00, clearance: false, count: 3},
-//   "SOY MILK": {price: 3.60, clearance: true, count: 1}
-// }
+
+
 const checkout = (cart, coupons) => {
   // code here
+  const ourCart = consolidateCart(cart)
+  // console.log(ourCart)
+  // console.log(coupons)
+  const couponedCart = applyCoupons(ourCart, coupons)
+  // console.log(couponedCart)
+  const discountCart = applyClearance(couponedCart);
+  console.log(discountCart)
+  let cartTotal = 0
+  for(let item in discountCart) {
+    cartTotal += discountCart[item].price * discountCart[item].count
+  } 
+// console.log(cartTotal)
+return cartTotal
 }
+
+console.log(checkout(items2, []));
